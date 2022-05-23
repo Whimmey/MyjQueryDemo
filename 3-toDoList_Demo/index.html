@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/index.css">
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/index.js"></script>
+</head>
+
+<body>
+    <header>
+        <section>
+            <label for="title">wyyToDo</label>
+            <input type="text" id="title" name="title" placeholder="输入ToDo，单击回车创建" required="required" autocomplete="off">
+        </section>
+    </header>
+    <section>
+        <h2>正在进行<span id="todocount"></span></h2>
+        <ol id="todolist" class="">
+            <!-- <li><input type="checkbox">
+                <p>123</p>
+                <a href="javascript:;"></a>
+            </li> -->
+        </ol>
+        <h2>已经完成<span id="donecount"></span></h2>
+        <ul id="donelist">
+        </ul>
+    </section>
+    <footer>
+        <h2>wyyToDo</h2>
+    </footer>
+    <script>
+        loadList();
+        $('#title').on('keyup', function(e) {
+            if (e.keyCode === 13 && $(this).val() !== '') {
+                //读取输入的数据
+                var todoItem = $('#title').val();
+                var getList = readLoacl();
+                //头插法插入列表中
+                getList.push({
+                    title: todoItem,
+                    done: false
+                });
+                reloadLocal(getList);
+                $('#title').val('');
+                loadList()
+            }
+        });
+        //绑定删除事件
+        $('ol,ul').on('click', 'a', function() {
+            var liIndex = $(this).parent('li').attr('index'); //a对应li的索引号
+            var todolist = readLoacl();
+            //删除index对应的本地存储数组的元素
+            todolist.splice(liIndex, 1);
+            //删除后的更新到本地存储
+            reloadLocal(todolist);
+            // 重新加载页面
+            loadList();
+        });
+        //事件状态切换
+        $('ol,ul').on('change', 'input', function() {
+            var liIndex = $(this).parent('li').attr('index'); //a对应li的索引号
+            var todolist = readLoacl();
+            todolist[liIndex].done = !todolist[liIndex].done; //done取反
+            //修改后的更新到本地存储
+            reloadLocal(todolist);
+            //重新加载页面
+            loadList();
+        });
+        //读取本地存储数据并返回 数组
+        function readLoacl() {
+            var todolist = localStorage.getItem('todolist');
+            if (todolist) {
+                return JSON.parse(todolist);
+            } else {
+                return [];
+            }
+        }
+        // 更新本地存储的 数组
+        function reloadLocal(getList) {
+            localStorage.setItem('todolist', JSON.stringify(getList));
+        }
+        //读取本地存储的 数组 并渲染到页面
+        function loadList() {
+            //先清空 防止重复加载
+            var list = readLoacl();
+            var todoNum = 0;
+            var doneNum = 0;
+            $('#donelist,#todolist').empty();
+            $.each(list, function(i, e) {
+                var newLi = $("<li><input type='checkbox'><p>" + e.title + "</p><a href='javascript:;'></a></li>");
+                newLi.attr('index', i);
+                if (e.done) {
+                    //设置checked为checked
+                    newLi = $("<li><input type='checkbox' checked='checked'><p>" + e.title + "</p><a href='javascript:;'></a></li>");
+                    newLi.attr('index', i);
+                    $('#donelist').prepend(newLi);
+                    doneNum++;
+                } else {
+                    $('#todolist').prepend(newLi);
+                    todoNum++;
+                }
+            });
+            //设置完成和未完成事件个数
+            $('#todocount').text(todoNum);
+            $('#donecount').text(doneNum);
+        }
+    </script>
+</body>
+
+</html>

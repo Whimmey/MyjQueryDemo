@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="jquery-3.6.0.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0
+        }
+        
+        ul {
+            list-style: none
+        }
+        
+        .box {
+            width: 600px;
+            margin: 100px auto;
+            border: 1px solid #000;
+            padding: 20px;
+        }
+        
+        textarea {
+            width: 450px;
+            height: 160px;
+            outline: none;
+            resize: none;
+        }
+        
+        ul {
+            width: 450px;
+            padding-left: 80px;
+        }
+        
+        ul li {
+            line-height: 25px;
+            border-bottom: 1px dashed #cccccc;
+            display: none;
+        }
+        
+        input {
+            float: right;
+        }
+        
+        ul li a {
+            float: right;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box" id="weibo">
+        <span>微博发布</span>
+        <textarea name="" class="txt" cols="30" rows="10"></textarea>
+        <button class="btn">发布</button>
+        <ul>
+        </ul>
+    </div>
+    <script>
+        $(function() {
+            $('.btn').on('click', function() {
+                var li = $('<li></li>');
+                li.html(+$('.txt').val() + '<a href="javascript:;">删除</a>');
+                $('.box ul').prepend(li);
+                // showComment();
+                li.slideDown();
+            });
+            //给a绑定删除操作
+            // 在程序执行时不会等待上面代码执行完之后，再执行下列代码，因此需要on
+            $('.box ul').on('click', 'a', function() {
+                // slideUp()隐藏之后 再删除
+                $(this).parent().slideUp(function() {
+                    $(this).remove();
+                });
+            })
+
+            function showComment() {
+                if ($('.box ul li').length > 0) {
+                    $('.box ul li').css('display', 'block');
+                } else {
+                    $('.box ul li').css('display', 'none');
+                }
+            }
+
+        })
+    </script>
+</body>
+
+</html>
